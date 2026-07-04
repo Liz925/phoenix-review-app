@@ -7,78 +7,114 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Phoenix Review">
 <meta name="theme-color" content="#f5f6f8">
-<title>Phoenix Review App</title>
+<title>Phoenix Review App v1.4</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=1.4">
 </head>
 <body>
 <div class="app">
-  <div class="header">
-    <div class="topline"><div class="logo"><span class="mark"></span><span>Phoenix Review</span></div><div class="datepill" id="today_text"></div></div>
-    <div class="subtitle">记录不是为了反刍，是为了把每天推进到更高势能的位置。</div>
-  </div>
+  <header class="header">
+    <div class="topline">
+      <div class="logo"><span class="mark"></span><span>Phoenix Review</span></div>
+      <div class="datepill" id="today_text"></div>
+    </div>
+    <div class="subtitle">v1.4 草稿 + 历史库 + 日历查询 + 周导出。先保存草稿，再上传为正式记录。</div>
+  </header>
 
-  <main id="today" class="view active">
+  <main id="capture" class="view active">
     <section class="card">
-      <h1>今天</h1>
-      <p class="hint">v1.2 双保存版：本机 localStorage + IndexedDB 双写；保存后刷新应自动回填。</p>
-      <label>日期</label><input id="r_date" type="date">
-      <div class="grid">
-        <div><label>情绪</label><div class="seg"><button data-seg="mood" data-val="1">1</button><button data-seg="mood" data-val="2">2</button><button data-seg="mood" data-val="3" class="active">3</button><button data-seg="mood" data-val="4">4</button><button data-seg="mood" data-val="5">5</button></div></div>
-        <div><label>精力</label><div class="seg"><button data-seg="energy" data-val="1">1</button><button data-seg="energy" data-val="2">2</button><button data-seg="energy" data-val="3" class="active">3</button><button data-seg="energy" data-val="4">4</button><button data-seg="energy" data-val="5">5</button></div></div>
+      <h1>记录</h1>
+      <p class="hint">适合随手写、未完成先存草稿；完成后点“上传到历史库”，它才会进入日历和周导出。</p>
+
+      <div class="mode-switch">
+        <button class="mode active" data-mode="review">每日复盘</button>
+        <button class="mode" data-mode="thought">随机想法</button>
       </div>
-      <label>标签</label><div class="chips"><span class="chip" data-tag="求职">求职</span><span class="chip" data-tag="面试">面试</span><span class="chip" data-tag="PMR案例">PMR案例</span><span class="chip" data-tag="英语">英语</span><span class="chip" data-tag="健身">健身</span><span class="chip" data-tag="情绪边界">情绪边界</span><span class="chip" data-tag="家庭">家庭</span><span class="chip" data-tag="低价值消耗">低价值消耗</span></div>
-      <label>1. 今天做了什么</label><textarea id="r_done" placeholder="例如：投递了3个岗位；复盘了宁德时代采购；健身40分钟；整理了PVC案例……"></textarea>
-      <label>2. 今天真正有价值的动作</label><textarea id="r_valuable" placeholder="只写真正推进目标的事情，不写流水账。"></textarea>
-      <label>3. 求职 / 面试 / 投递推进</label><textarea id="r_job" placeholder="岗位、公司、沟通、面试准备、简历优化。"></textarea>
-      <label>4. 案例库 / 专业能力 / 英语</label><textarea id="r_ability" placeholder="PMR案例、采购概念、英文表达、行业知识。"></textarea>
-      <label>5. 身体 / 健身 / 作息</label><textarea id="r_body" placeholder="运动、饮食、睡眠、身体状态。"></textarea>
-      <label>6. 情绪 / 家庭边界 / 社交状态</label><textarea id="r_emotion" placeholder="情绪波动、边界、关系、环境影响。"></textarea>
-      <label>7. 低价值消耗</label><textarea id="r_low" placeholder="刷视频、无效沟通、情绪反刍、拖延。"></textarea>
-      <label>8. 明天最重要的3件事</label><textarea id="r_tomorrow" placeholder="1）\n2）\n3）"></textarea>
-      <div class="btn-row"><button id="save_review" class="btn blue">保存今日复盘</button><button id="generate_review" class="btn">生成给 ChatGPT</button></div>
-      <div class="btn-row"><button id="clear_review" class="btn secondary">清空输入</button></div>
+
+      <div class="grid">
+        <div><label>日期</label><input id="date" type="date"></div>
+        <div><label>时间</label><input id="time" type="time"></div>
+      </div>
+
+      <div id="review_meta">
+        <div class="grid">
+          <div><label>情绪</label><div class="seg"><button data-seg="mood" data-val="1">1</button><button data-seg="mood" data-val="2">2</button><button data-seg="mood" data-val="3" class="active">3</button><button data-seg="mood" data-val="4">4</button><button data-seg="mood" data-val="5">5</button></div></div>
+          <div><label>精力</label><div class="seg"><button data-seg="energy" data-val="1">1</button><button data-seg="energy" data-val="2">2</button><button data-seg="energy" data-val="3" class="active">3</button><button data-seg="energy" data-val="4">4</button><button data-seg="energy" data-val="5">5</button></div></div>
+        </div>
+        <label>标签</label>
+        <div class="chips" id="review_tags">
+          <span class="chip" data-tag="求职">求职</span><span class="chip" data-tag="面试">面试</span><span class="chip" data-tag="PMR案例">PMR案例</span><span class="chip" data-tag="英语">英语</span><span class="chip" data-tag="健身">健身</span><span class="chip" data-tag="情绪边界">情绪边界</span><span class="chip" data-tag="家庭">家庭</span><span class="chip" data-tag="低价值消耗">低价值消耗</span>
+        </div>
+      </div>
+
+      <div id="review_form" class="form-block">
+        <label>1. 今天做了什么</label><textarea id="r_done" placeholder="例如：投递岗位、面试沟通、健身、整理案例、随机事项……"></textarea>
+        <label>2. 今天真正有价值的动作</label><textarea id="r_valuable" placeholder="只写真正推进目标的事情。"></textarea>
+        <label>3. 求职 / 面试 / 投递推进</label><textarea id="r_job" placeholder="岗位、公司、沟通、面试准备、简历优化。"></textarea>
+        <label>4. 案例库 / 专业能力 / 英语</label><textarea id="r_ability" placeholder="PMR案例、采购概念、英文表达、行业知识。"></textarea>
+        <label>5. 身体 / 健身 / 作息</label><textarea id="r_body" placeholder="运动、饮食、睡眠、身体状态。"></textarea>
+        <label>6. 情绪 / 家庭边界 / 社交状态</label><textarea id="r_emotion" placeholder="情绪波动、边界、关系、环境影响。"></textarea>
+        <label>7. 低价值消耗</label><textarea id="r_low" placeholder="刷视频、无效沟通、情绪反刍、拖延。"></textarea>
+        <label>8. 明天最重要的3件事</label><textarea id="r_tomorrow" placeholder="1）\n2）\n3）"></textarea>
+      </div>
+
+      <div id="thought_form" class="form-block hidden">
+        <label>想法分类</label><select id="t_type"><option>行动线索</option><option>内容素材</option><option>情绪信号</option><option>求职判断</option><option>人际边界</option><option>身体信号</option><option>低价值噪音</option></select>
+        <label>原始想法</label><textarea id="t_text" placeholder="先原样写，不用修饰。"></textarea>
+        <label>背后的真实信号</label><textarea id="t_signal" placeholder="例如：不是想沟通，而是环境需要改变。"></textarea>
+        <label>下一步处理</label><textarea id="t_next" placeholder="马上行动 / 暂存 / 放下 / 改成内容素材。"></textarea>
+      </div>
+
+      <div class="draft-status" id="current_draft_status">当前：新建草稿</div>
+      <div class="btn-row">
+        <button id="save_draft" class="btn">存为草稿</button>
+        <button id="upload_draft" class="btn blue">上传到历史库</button>
+      </div>
+      <div class="btn-row">
+        <button id="new_blank" class="btn secondary">新建空白草稿</button>
+        <button id="copy_current" class="btn secondary">复制当前内容</button>
+      </div>
     </section>
-    <section id="chatgpt_card" class="card hidden"><h2 id="output">给 ChatGPT 的文本</h2><div id="chatgpt_output" class="output"></div><div class="btn-row"><button id="copy_review" class="btn blue">复制文本</button></div></section>
+    <section class="card hidden" id="copy_card"><h2>当前内容</h2><div id="copy_output" class="output"></div><div class="btn-row"><button id="copy_output_btn" class="btn blue">复制文本</button></div></section>
   </main>
 
-  <main id="thought" class="view">
+  <main id="drafts" class="view">
+    <section class="card"><h1>草稿箱</h1><p class="hint">没有完成的内容先放这里。点击“继续编辑”回到记录页；点击“上传”后会成为正式历史记录，并进入日历和导出。</p><div id="draft_list" class="list"></div></section>
+  </main>
+
+  <main id="calendar" class="view">
     <section class="card">
-      <h1>随机想法</h1><p class="hint">任何念头先收进来，再判断它是行动线索、内容素材、情绪信号，还是噪音。</p>
-      <div class="grid"><div><label>日期</label><input id="t_date" type="date"></div><div><label>时间</label><input id="t_time" type="time"></div></div>
-      <label>分类</label><select id="t_type"><option>行动线索</option><option>内容素材</option><option>情绪信号</option><option>求职判断</option><option>人际边界</option><option>身体信号</option><option>低价值噪音</option></select>
-      <label>原始想法</label><textarea id="t_text" placeholder="先原样写，不用修饰。"></textarea>
-      <label>背后的真实信号</label><textarea id="t_signal" placeholder="例如：不是想沟通，而是环境需要改变；不是懒，而是精力过载。"></textarea>
-      <label>下一步</label><textarea id="t_next" placeholder="马上行动 / 暂存 / 放下 / 改成小红书文案。"></textarea>
-      <div class="btn-row"><button id="save_thought" class="btn blue">保存想法</button><button id="copy_thought" class="btn">复制给 ChatGPT</button></div>
-      <div class="btn-row"><button id="clear_thought" class="btn secondary">清空输入</button></div>
+      <h1>日历</h1>
+      <p class="hint">按日期查看当天所有复盘和随机想法。这里显示的是已经“上传到历史库”的正式记录。</p>
+      <div class="grid"><div><label>选择日期</label><input id="cal_date" type="date"></div><div><label>筛选</label><select id="cal_type"><option value="all">全部</option><option value="review">只看复盘</option><option value="thought">只看想法</option></select></div></div>
+      <div class="btn-row"><button id="prev_day" class="btn secondary">前一天</button><button id="today_day" class="btn secondary">今天</button><button id="next_day" class="btn secondary">后一天</button></div>
+      <div class="summary-strip"><span id="cal_count">0 条记录</span><span id="cal_draft_count">0 个草稿</span></div>
+      <div id="calendar_list" class="list"></div>
     </section>
-    <section id="thought_output_card" class="card hidden"><h2>最近一条想法</h2><div id="thought_output" class="output"></div></section>
   </main>
 
-  <main id="review" class="view">
-    <section class="card"><h1>阶段复盘</h1><p class="hint">用于周复盘、月复盘。先生成文本，再发给 ChatGPT 做深度分析。</p>
-      <div class="grid"><div><label>截止日期</label><input id="w_end" type="date"></div><div><label>天数</label><select id="w_days"><option value="7">最近7天</option><option value="14">最近14天</option><option value="30">最近30天</option></select></div></div>
-      <div class="btn-row"><button id="make_weekly" class="btn blue">生成阶段复盘</button><button id="copy_weekly" class="btn">复制文本</button></div>
+  <main id="export" class="view">
+    <section class="card">
+      <h1>导出</h1>
+      <p class="hint">用于把本周/本月的所有想法和复盘发给 ChatGPT 做解析。默认只导出正式历史记录；可勾选草稿。</p>
+      <div class="grid">
+        <div><label>开始日期</label><input id="export_start" type="date"></div>
+        <div><label>结束日期</label><input id="export_end" type="date"></div>
+      </div>
+      <div class="btn-row"><button id="range_week" class="btn secondary">本周</button><button id="range_7" class="btn secondary">最近7天</button><button id="range_month" class="btn secondary">本月</button></div>
+      <label class="checkline"><input id="include_drafts" type="checkbox"> 导出时包含未完成草稿</label>
+      <div class="btn-row"><button id="make_export" class="btn blue">生成给 ChatGPT</button><button id="copy_export" class="btn">复制文本</button></div>
+      <div class="btn-row"><button id="download_txt" class="btn">下载 TXT</button><button id="download_json" class="btn">下载 JSON 备份</button></div>
     </section>
-    <section id="weekly_card" class="card hidden"><h2>阶段复盘文本</h2><div id="weekly_output" class="output"></div></section>
-    <section class="card"><h2>最近记录</h2><div id="history_list" class="list"></div></section>
-  </main>
-
-  <main id="data" class="view">
-    <section class="card"><h1>数据</h1><p class="hint">数据保存在当前浏览器本地。换手机/清缓存前先导出 JSON。</p><p id="storage_status" class="hint">正在检测保存状态……</p><div class="btn-row"><button id="storage_test" class="btn">测试本机保存</button></div>
-      <div class="grid3"><div class="stat"><div class="score" id="stat_reviews">0</div><div class="small">复盘</div></div><div class="stat"><div class="score" id="stat_thoughts">0</div><div class="small">想法</div></div><div class="stat"><div class="score" id="stat_last">无</div><div class="small">最近复盘</div></div></div>
-      <div class="btn-row"><button id="export_json" class="btn blue">导出 JSON 备份</button><button id="export_txt" class="btn">导出 TXT 给电脑</button></div>
-      <label>导入 JSON 备份</label><input id="import_file" type="file" accept="application/json,.json">
-      <div class="btn-row"><button id="clear_all" class="btn danger">清空全部数据</button></div>
-      <p class="footer-note">建议：iPhone 上用 Safari 打开，不要在 ChatGPT 内置预览里长期使用。</p>
-    </section>
+    <section id="export_card" class="card hidden"><h2>导出文本</h2><div id="export_output" class="output"></div></section>
+    <section class="card"><h2>数据管理</h2><p id="storage_status" class="hint">检测中……</p><div class="grid3"><div class="stat"><div class="score" id="stat_records">0</div><div class="small">历史记录</div></div><div class="stat"><div class="score" id="stat_drafts">0</div><div class="small">草稿</div></div><div class="stat"><div class="score" id="stat_days">0</div><div class="small">有记录天数</div></div></div><label>导入 JSON 备份</label><input id="import_file" type="file" accept="application/json,.json"><div class="btn-row"><button id="storage_test" class="btn secondary">测试本机保存</button><button id="clear_all" class="btn danger">清空全部数据</button></div><p class="footer-note">当前仍是本地存储版：同一设备/同一浏览器可用；换设备前请导出 JSON。若要手机和电脑自动同步，需要后续接 Supabase/Firebase 云端数据库。</p></section>
   </main>
 </div>
-<div class="tabs"><div class="tabbar"><button class="tab active" data-view="today"><b>＋</b>今天</button><button class="tab" data-view="thought"><b>✦</b>想法</button><button class="tab" data-view="review"><b>◎</b>复盘</button><button class="tab" data-view="data"><b>⌁</b>数据</button></div></div>
+
+<nav class="tabs"><div class="tabbar"><button class="tab active" data-view="capture"><b>＋</b>记录</button><button class="tab" data-view="drafts"><b>□</b>草稿</button><button class="tab" data-view="calendar"><b>◎</b>日历</button><button class="tab" data-view="export"><b>⌁</b>导出</button></div></nav>
 <div id="toast" class="toast"></div>
-<script src="app.js"></script>
-<script>if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){})})}</script>
+<script src="app.js?v=1.4"></script>
+<script>if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js?v=1.4').catch(function(){})})}</script>
 </body>
 </html>
