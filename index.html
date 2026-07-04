@@ -22,7 +22,7 @@
   <main id="today" class="view active">
     <section class="card">
       <h1>今天</h1>
-      <p class="hint">打开就写。保存之后可以一键生成发给 ChatGPT 的复盘文本。</p>
+      <p class="hint">v1.2 双保存版：本机 localStorage + IndexedDB 双写；保存后刷新应自动回填。</p>
       <label>日期</label><input id="r_date" type="date">
       <div class="grid">
         <div><label>情绪</label><div class="seg"><button data-seg="mood" data-val="1">1</button><button data-seg="mood" data-val="2">2</button><button data-seg="mood" data-val="3" class="active">3</button><button data-seg="mood" data-val="4">4</button><button data-seg="mood" data-val="5">5</button></div></div>
@@ -67,7 +67,7 @@
   </main>
 
   <main id="data" class="view">
-    <section class="card"><h1>数据</h1><p class="hint">数据保存在当前浏览器本地。换手机/清缓存前先导出 JSON。</p>
+    <section class="card"><h1>数据</h1><p class="hint">数据保存在当前浏览器本地。换手机/清缓存前先导出 JSON。</p><p id="storage_status" class="hint">正在检测保存状态……</p><div class="btn-row"><button id="storage_test" class="btn">测试本机保存</button></div>
       <div class="grid3"><div class="stat"><div class="score" id="stat_reviews">0</div><div class="small">复盘</div></div><div class="stat"><div class="score" id="stat_thoughts">0</div><div class="small">想法</div></div><div class="stat"><div class="score" id="stat_last">无</div><div class="small">最近复盘</div></div></div>
       <div class="btn-row"><button id="export_json" class="btn blue">导出 JSON 备份</button><button id="export_txt" class="btn">导出 TXT 给电脑</button></div>
       <label>导入 JSON 备份</label><input id="import_file" type="file" accept="application/json,.json">
