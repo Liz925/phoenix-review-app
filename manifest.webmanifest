@@ -2,7 +2,7 @@
   "name": "Phoenix Review",
   "short_name": "Phoenix",
   "description": "草稿、历史库、日历查询和阶段导出的个人复盘 PWA。",
-  "start_url": "./?v=1.4.3",
+  "start_url": "./?v=1.4.7",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f5f6f8",

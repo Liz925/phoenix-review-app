@@ -37,3 +37,8 @@ input[type="date"], input[type="time"] {
   .nav-pair { grid-template-columns:1fr 1fr; }
   .calendar-nav .btn, .range-actions .btn, .full-action .btn { min-height:48px; }
 }
+
+/* explicit button-width guard */
+.calendar-nav > .nav-pair, .range-actions > .nav-pair { width:100%; }
+.nav-pair .btn { width:100%; min-width:0; }
+.calendar-nav .full-btn, .range-actions .full-btn { display:block; width:100%; min-height:52px; }

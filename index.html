@@ -7,10 +7,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Phoenix Review">
 <meta name="theme-color" content="#f5f6f8">
-<title>Phoenix Review App v1.4.4</title>
+<title>Phoenix Review App v1.4.7</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
-<link rel="stylesheet" href="style.css?v=1.4.3">
+<link rel="stylesheet" href="style.css?v=1.4.7">
 </head>
 <body>
 <div class="app">
@@ -19,7 +19,7 @@
       <div class="logo"><span class="mark"></span><span>Phoenix Review</span></div>
       <div class="datepill" id="today_text"></div>
     </div>
-    <div class="subtitle">v1.4.4 · The world is my oyster, and I shall claim it with my sword.</div>
+    <div class="subtitle">v1.4.7 · The world is my oyster and I shall claim it with my sword.</div>
   </header>
 
   <main id="capture" class="view active">
@@ -114,7 +114,20 @@
 
 <nav class="tabs"><div class="tabbar"><button class="tab active" data-view="capture"><b>＋</b>记录</button><button class="tab" data-view="drafts"><b>□</b>草稿</button><button class="tab" data-view="calendar"><b>◎</b>日历</button><button class="tab" data-view="export"><b>⌁</b>导出</button></div></nav>
 <div id="toast" class="toast"></div>
-<script src="app.js?v=1.4.3"></script>
-<script>if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js?v=1.4.3').catch(function(){})})}</script>
+<script src="app.js?v=1.4.7"></script>
+<script>
+if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){
+  var refreshing=false;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(refreshing)return;refreshing=true;window.location.reload();
+  });
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('./sw.js?v=1.4.7').then(function(reg){
+      if(reg&&reg.update)reg.update();
+      if(reg&&reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});
+    }).catch(function(){});
+  });
+}
+</script>
 </body>
 </html>
