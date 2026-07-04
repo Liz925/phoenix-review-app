@@ -2,7 +2,7 @@
   var KEY='phoenix_review_app_v14_data';
   var LEGACY_KEYS=['phoenix_review_app_v13_data','phoenix_review_app_v12_data','phoenix_review_app_v11_data','phoenix_review_app_v1_data'];
   var LEGACY_FORM_PREFIXES=['phoenix_review_app_v13_form_','phoenix_review_app_v12_form_','phoenix_review_app_v11_form_','phoenix_review_app_v1_form_'];
-  var state={records:[],drafts:[],settings:{version:'1.4'}};
+  var state={records:[],drafts:[],settings:{version:'1.4.3'}};
   var currentMode='review', currentDraftId=null, mood=3, energy=3, selectedTags=[];
   var timer=null;
   function $(id){return document.getElementById(id)}
@@ -25,7 +25,7 @@
   function load(){var data=readJSON(KEY,null);if(!data){for(var i=0;i<LEGACY_KEYS.length;i++){var old=readJSON(LEGACY_KEYS[i],null);if(old){data=legacyToV14(old);break}}}state=normalize(data||{records:[],drafts:[],settings:{version:'1.4'}});migrateLegacyDrafts();saveState()}
   function migrateLegacyDrafts(){var seen={};state.drafts.forEach(function(d){seen[d.date+'_'+d.type]=1});try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);for(var j=0;j<LEGACY_FORM_PREFIXES.length;j++){var p=LEGACY_FORM_PREFIXES[j];if(k&&k.indexOf(p)===0){var f=readJSON(k,null);if(f&&f.date&&!seen[f.date+'_review']){state.drafts.push({id:uid('draft_legacy'),type:'review',date:f.date,time:f.time||nowTime(),mood:Number(f.mood)||3,energy:Number(f.energy)||3,tags:Array.isArray(f.tags)?f.tags:[],fields:{done:f.done||'',valuable:f.valuable||'',job:f.job||'',ability:f.ability||'',body:f.body||'',emotion:f.emotion||'',low:f.low||'',tomorrow:f.tomorrow||''},status:'draft',createdAt:f.createdAt||stamp(),updatedAt:f.updatedAt||f.createdAt||stamp()});seen[f.date+'_review']=1}}}}}catch(e){}
   }
-  function saveState(){state.settings.version='1.4';state.settings.updatedAt=stamp();return writeJSON(KEY,state)}
+  function saveState(){state.settings.version='1.4.3';state.settings.updatedAt=stamp();return writeJSON(KEY,state)}
   function reviewIds(){return ['r_done','r_valuable','r_job','r_ability','r_body','r_emotion','r_low','r_tomorrow']}
   function thoughtIds(){return ['t_text','t_signal','t_next']}
   function setMode(mode){currentMode=mode;qsa('.mode').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-mode')===mode)});$('review_form').classList.toggle('hidden',mode!=='review');$('review_meta').classList.toggle('hidden',mode!=='review');$('thought_form').classList.toggle('hidden',mode!=='thought');updateDraftStatus()}
@@ -66,8 +66,7 @@
     $('range_week').onclick=function(){setRange('week')};$('range_7').onclick=function(){setRange('7')};$('range_month').onclick=function(){setRange('month')};
     $('make_export').onclick=function(){var txt=exportText();$('export_output').textContent=txt;$('export_card').classList.remove('hidden')};$('copy_export').onclick=function(){copyText($('export_output').textContent||exportText())};$('download_txt').onclick=function(){download('phoenix-export-'+($('export_start').value||today())+'_'+($('export_end').value||today())+'.txt',exportText(),'text/plain')};$('download_json').onclick=function(){download('phoenix-backup-'+today()+'.json',JSON.stringify(state,null,2),'application/json')};
     $('import_file').onchange=function(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var data=normalize(JSON.parse(r.result));state=data;saveState();renderDrafts();renderCalendar();renderStats();toast('导入成功')}catch(err){toast('导入失败：JSON格式不对')}};r.readAsText(f)};
-    $('storage_test').onclick=function(){var k='px_test_'+Date.now();var ok=writeJSON(k,{t:stamp()});var v=readJSON(k,null);localStorage.removeItem(k);toast(ok&&v?'本机保存正常':'本机保存失败')};
-    $('clear_all').onclick=function(){if(confirm('确认清空全部本地数据？请先导出 JSON 备份。')){state={records:[],drafts:[],settings:{version:'1.4'}};saveState();clearForm();renderDrafts();renderCalendar();renderStats();toast('已清空')}};
+    $('clear_all').onclick=function(){if(confirm('确认清空全部本地数据？请先导出 JSON 备份。')){state={records:[],drafts:[],settings:{version:'1.4.3'}};saveState();clearForm();renderDrafts();renderCalendar();renderStats();toast('已清空')}};
   }
   function init(){if(!okLS())toast('当前环境禁止本地保存');load();$('today_text').textContent=today();$('date').value=today();$('time').value=nowTime();$('cal_date').value=today();setRange('week');bind();setMode('review');updateUI();renderDrafts();renderCalendar();renderStats()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
